@@ -1,0 +1,333 @@
+---
+description: This details the best way to create documentation for a project
+globs: 
+alwaysApply: false
+---
+# Application Documentation Rules & Best Practices
+
+## Core Documentation Principles
+
+### 1. Documentation-First Mindset
+- **ALWAYS** write documentation before or alongside code development
+- Treat documentation as a first-class citizen, not an afterthought
+- Every feature, API endpoint, and component must have corresponding documentation
+- Documentation should be the single source of truth for how the application works
+
+### 2. Audience-Centered Approach
+- **Know your audience**: Identify who will read each piece of documentation
+- Write for different skill levels: beginners, intermediate, and advanced users
+- Use appropriate technical depth for each audience
+- Include role-specific guides: developers, designers, product managers, end users
+
+## Documentation Structure & Organization
+
+### 3. Hierarchical Information Architecture
+- **Start with overview, then drill down**: Follow the inverted pyramid structure
+- Organize content in logical, discoverable sections:
+  ```
+  📁 docs/
+  ├── 📄 README.md (Project overview & quick start)
+  ├── 📁 getting-started/
+  ├── 📁 user-guide/
+  ├── 📁 developer-guide/
+  ├── 📁 api-reference/
+  ├── 📁 deployment/
+  ├── 📁 troubleshooting/
+  └── 📁 contributing/
+  ```
+
+### 4. Navigation & Discoverability
+- **Create clear navigation paths**: Use consistent menu structures
+- Implement breadcrumbs for deep content hierarchies
+- Include search functionality when possible
+- Use cross-references and internal linking liberally
+- Maintain a comprehensive table of contents for long documents
+
+### 5. Essential Documentation Types
+Create and maintain these core document types:
+- **README.md**: Project overview, quick start, and basic usage
+- **Getting Started Guide**: Step-by-step onboarding for new users
+- **User Manual**: Comprehensive feature documentation with screenshots
+- **API Documentation**: Complete endpoint reference with examples
+- **Developer Guide**: Architecture, setup, and contribution guidelines
+- **Deployment Guide**: Infrastructure and release procedures
+- **Troubleshooting**: Common issues and solutions
+- **Changelog**: Version history and migration guides
+
+## Content Creation Standards
+
+### 6. Writing Style & Tone
+- **Use clear, concise language**: Avoid jargon unless necessary
+- Write in active voice: "Click the button" not "The button should be clicked"
+- Use second person ("you") for instructions and guides
+- Be conversational but professional
+- Write scannable content with headers, bullets, and short paragraphs
+- Use consistent terminology throughout all documentation
+
+### 7. Structure Each Document
+Follow this template for comprehensive guides:
+```markdown
+# Document Title
+
+## Overview
+Brief description of what this document covers and who it's for.
+
+## Prerequisites
+What users need to know or have before starting.
+
+## Quick Start
+The fastest path to success (under 5 minutes if possible).
+
+## Detailed Guide
+Step-by-step instructions with explanations.
+
+## Examples
+Real-world use cases and code samples.
+
+## Troubleshooting
+Common issues and solutions.
+
+## Related Resources
+Links to relevant documentation.
+```
+
+### 8. Code Examples & Snippets
+- **Always include working examples**: Test every code snippet
+- Provide complete, runnable examples rather than fragments
+- Use syntax highlighting and proper formatting
+- Include expected output when relevant
+- Show both successful and error scenarios
+- Use realistic data in examples, not "foo" and "bar"
+
+### 9. Visual Elements
+- **Include screenshots for UI elements**: Update regularly when UI changes
+- Use diagrams for complex workflows and architectures
+- Create animated GIFs for multi-step processes
+- Use consistent styling for callouts, warnings, and notes:
+  ```markdown
+  > ⚠️ **Warning**: This action cannot be undone.
+  
+  > ℹ️ **Info**: This feature requires authentication.
+  
+  > ✅ **Tip**: Use keyboard shortcuts to speed up your workflow.
+  ```
+
+## API Documentation Excellence
+
+### 10. Comprehensive API Reference
+For every endpoint, provide:
+- **Purpose**: What the endpoint does
+- **HTTP method and URL**: Clear endpoint definition
+- **Parameters**: All query, path, and body parameters with types
+- **Request examples**: Multiple realistic scenarios
+- **Response examples**: Success and error responses
+- **Status codes**: All possible HTTP status codes
+- **Authentication**: Required permissions or tokens
+
+### 11. API Documentation Template
+```markdown
+## POST /api/users
+
+Creates a new user account.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| email | string | Yes | User's email address |
+| password | string | Yes | Minimum 8 characters |
+| name | string | No | Full name |
+
+### Request Example
+```json
+{
+  "email": "user@example.com",
+  "password": "securePassword123",
+  "name": "John Doe"
+}
+```
+
+### Response Example
+```json
+{
+  "id": 12345,
+  "email": "user@example.com",
+  "name": "John Doe",
+  "created_at": "2025-06-21T10:30:00Z"
+}
+```
+
+### Error Responses
+- `400 Bad Request`: Invalid email format
+- `409 Conflict`: Email already exists
+- `422 Unprocessable Entity`: Password too weak
+```
+
+## Interactive & Live Documentation
+
+### 12. Keep Documentation Current
+- **Automate where possible**: Generate API docs from code annotations
+- Use tools like OpenAPI/Swagger for API documentation
+- Implement documentation testing to catch outdated content
+- Set up automated screenshot updates for UI documentation
+- Use linting tools for documentation quality checks
+
+### 13. Interactive Examples
+- **Provide tryable examples**: Use tools like CodePen, JSFiddle, or embedded playgrounds
+- Include "Try it now" buttons in API documentation
+- Create interactive tutorials when possible
+- Use tools like Postman collections for API testing
+
+## User Experience & Accessibility
+
+### 14. Progressive Disclosure
+- **Layer information appropriately**: Start simple, provide detail on demand
+- Use expandable sections for advanced topics
+- Create multiple paths through the same information
+- Provide both quick reference and detailed guides
+- Include "Show me how" buttons for complex procedures
+
+### 15. Accessibility Standards
+- **Write for all users**: Use clear headings hierarchy (H1 → H2 → H3)
+- Provide alt text for all images and diagrams
+- Use sufficient color contrast for text
+- Ensure documentation works with screen readers
+- Test with accessibility tools and real users
+
+### 16. Mobile-Friendly Documentation
+- **Optimize for all devices**: Use responsive design
+- Test documentation on mobile devices
+- Ensure code examples are readable on small screens
+- Use collapsible sections to manage screen real estate
+
+## Maintenance & Quality Assurance
+
+### 17. Documentation Lifecycle Management
+- **Establish review processes**: Every doc change should be reviewed
+- Set up regular documentation audits (quarterly reviews)
+- Monitor user feedback and usage analytics
+- Create documentation issue templates for bug reports
+- Implement version control for documentation changes
+
+### 18. User Feedback Integration
+- **Listen to your users**: Add feedback mechanisms to every page
+- Monitor support tickets for documentation gaps
+- Conduct user testing sessions for complex workflows
+- Create surveys for documentation satisfaction
+- Respond promptly to documentation requests
+
+### 19. Quality Metrics & KPIs
+Track these metrics to measure documentation success:
+- **User engagement**: Time spent on docs, bounce rate
+- **Task completion**: Can users accomplish their goals?
+- **Feedback scores**: Ratings and qualitative feedback
+- **Support ticket reduction**: Fewer questions = better docs
+- **Content freshness**: Age of last update for each page
+
+## Tool Recommendations & Workflows
+
+### 20. Documentation Tools
+Choose appropriate tools for your needs:
+- **Static site generators**: GitBook, Docusaurus, VitePress, MkDocs
+- **API documentation**: Swagger/OpenAPI, Redoc, Insomnia
+- **Diagramming**: Mermaid, Lucidchart, Draw.io
+- **Screenshots**: CleanShot X, Snagit, built-in browser tools
+- **Video**: Loom, OBS Studio for screen recordings
+
+### 21. Version Control & Collaboration
+- **Treat docs like code**: Use Git for version control
+- Store documentation in the same repository as code when possible
+- Use pull request workflows for documentation changes
+- Implement documentation review processes
+- Tag documentation versions with software releases
+
+### 22. Automation & Integration
+- **Automate repetitive tasks**: 
+  - Generate API docs from code comments
+  - Update version numbers automatically
+  - Deploy documentation with CI/CD pipelines
+  - Check for broken links and outdated screenshots
+  - Validate code examples in documentation
+
+## Content Templates & Checklists
+
+### 23. Feature Documentation Template
+```markdown
+# Feature Name
+
+## What it does
+Brief explanation of the feature's purpose and value.
+
+## How to use it
+Step-by-step instructions with screenshots.
+
+## Configuration options
+All settings and customization options.
+
+## Examples
+Real-world use cases.
+
+## Limitations
+What the feature doesn't do.
+
+## Related features
+Cross-references to related functionality.
+```
+
+### 24. Pre-Publication Checklist
+Before publishing any documentation:
+- [ ] Content is accurate and tested
+- [ ] All links work correctly
+- [ ] Screenshots are current and properly sized
+- [ ] Code examples are tested and functional
+- [ ] Grammar and spelling are correct
+- [ ] Headings follow proper hierarchy
+- [ ] Cross-references are included
+- [ ] Accessibility guidelines are followed
+- [ ] Content is reviewed by another team member
+- [ ] Feedback mechanism is in place
+
+## Advanced Documentation Strategies
+
+### 25. Personalization & Contextualization
+- **Tailor content to user context**: Show relevant examples based on user role
+- Use conditional content for different deployment scenarios
+- Provide personalized quick-start guides
+- Remember user preferences for documentation display
+
+### 26. Community-Driven Documentation
+- **Enable community contributions**: Accept pull requests for documentation
+- Create contributor guidelines for documentation
+- Implement community review processes
+- Recognize and reward documentation contributors
+- Foster a culture where everyone contributes to docs
+
+### 27. Analytics & Continuous Improvement
+- **Measure and optimize**: Use analytics to understand user behavior
+- A/B test different approaches to explaining concepts
+- Track which pages lead to successful task completion
+- Monitor search queries to identify content gaps
+- Use heatmaps to understand how users read documentation
+
+---
+
+## Success Criteria
+
+Great documentation should:
+- ✅ **Enable independence**: Users can accomplish tasks without additional help
+- ✅ **Reduce support burden**: Fewer questions to support teams
+- ✅ **Accelerate onboarding**: New users become productive quickly
+- ✅ **Scale with the product**: Documentation grows alongside features
+- ✅ **Build confidence**: Users feel empowered to explore and experiment
+
+## Emergency Documentation Protocols
+
+### 28. Critical Issue Documentation
+When urgent issues arise:
+- **Create immediate workarounds**: Document temporary solutions
+- Update known issues sections promptly
+- Provide clear escalation paths
+- Create incident-specific documentation
+- Follow up with permanent solution documentation
+
+Remember: Amazing documentation is not just about writing—it's about creating an ecosystem where users can learn, succeed, and contribute back to the community.

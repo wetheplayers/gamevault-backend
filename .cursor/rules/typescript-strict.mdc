@@ -1,0 +1,599 @@
+---
+description: typescript-strict
+globs: 
+alwaysApply: false
+---
+# TypeScript Strict Configuration and Best Practices
+
+This rules file enforces the strictest TypeScript configuration and best practices based on the latest recommendations from TypeScript and typescript-eslint teams.
+
+## TypeScript Compiler Configuration (tsconfig.json)
+
+### Strict Mode Requirements
+
+**ALWAYS** enable all strict mode flags in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    // Core strict mode - MANDATORY
+    "strict": true,
+    
+    // Individual strict flags (included in "strict": true, but listed for clarity)
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    
+    // Additional strict checks - REQUIRED
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true,
+    
+    // Code quality checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    
+    // Module and resolution
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowJs": true, // Enable for mixed JS/TS environments
+    "checkJs": false, // Keep false to avoid checking legacy JS
+    "allowSyntheticDefaultImports": true, // Better import compatibility
+    
+    // Modern JavaScript
+    "target": "ES2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    
+    // Type safety
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
+    
+    // Import helpers for smaller bundles
+    "importHelpers": true,
+    "downlevelIteration": true
+  }
+}
+```
+
+### Why These Settings Matter
+
+- **`strict: true`**: Enables all strict type-checking options at once
+- **`noUncheckedIndexedAccess`**: Adds `undefined` to index signature results, preventing runtime errors
+- **`exactOptionalPropertyTypes`**: Ensures optional properties can't be explicitly set to `undefined`
+- **`noImplicitOverride`**: Requires `override` keyword when overriding base class methods
+- **`verbatimModuleSyntax`**: Replaces deprecated `importsNotUsedAsValues` and `preserveValueImports`
+- **`isolatedModules`**: Ensures each file can be transpiled independently
+- **`allowJs: true`**: Required for mixed JavaScript/TypeScript environments
+- **`allowSyntheticDefaultImports`**: Enables better compatibility between JS and TS imports
+
+## ESLint Configuration with TypeScript-ESLint
+
+### Strict ESLint Configuration
+
+Create or update your ESLint configuration to use the strictest rules:
+
+```javascript
+// eslint.config.mjs
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  // Base configurations
+  eslint.configs.recommended,
+  
+  // TypeScript-ESLint strict configurations
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  
+  // Custom strict rules
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      // Error Prevention
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      
+      // Type Safety
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/no-redundant-type-constituents': 'error',
+      '@typescript-eslint/no-unnecessary-condition': 'error',
+      '@typescript-eslint/strict-boolean-expressions': 'error',
+      
+      // Code Quality
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/promise-function-async': 'error',
+      
+      // Best Practices
+      '@typescript-eslint/prefer-readonly': 'error',
+      '@typescript-eslint/prefer-readonly-parameter-types': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+      '@typescript-eslint/prefer-includes': 'error',
+      
+      // Naming Conventions
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'default',
+          format: ['camelCase'],
+          leadingUnderscore: 'forbid',
+          trailingUnderscore: 'forbid',
+        },
+        {
+          selector: 'variable',
+          format: ['camelCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'enumMember',
+          format: ['UPPER_CASE'],
+        },
+        {
+          selector: 'parameter',
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'property',
+          format: ['camelCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
+        },
+      ],
+      
+      // Import Organization
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+      '@typescript-eslint/consistent-type-exports': 'error',
+      
+      // Function Rules
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+      
+      // Class Rules
+      '@typescript-eslint/explicit-member-accessibility': [
+        'error',
+        {
+          accessibility: 'explicit',
+          overrides: {
+            constructors: 'no-public',
+          },
+        },
+      ],
+      '@typescript-eslint/member-ordering': [
+        'error',
+        {
+          default: [
+            // Static fields
+            'public-static-field',
+            'protected-static-field',
+            'private-static-field',
+            
+            // Instance fields
+            'public-instance-field',
+            'protected-instance-field',
+            'private-instance-field',
+            
+            // Constructors
+            'constructor',
+            
+            // Static methods
+            'public-static-method',
+            'protected-static-method',
+            'private-static-method',
+            
+            // Instance methods
+            'public-instance-method',
+            'protected-instance-method',
+            'private-instance-method',
+          ],
+        },
+      ],
+      
+      // Disable base rules that conflict with TypeScript
+      'no-unused-vars': 'off',
+      'no-shadow': 'off',
+      '@typescript-eslint/no-shadow': 'error',
+      'no-use-before-define': 'off',
+      '@typescript-eslint/no-use-before-define': 'error',
+      'no-redeclare': 'off',
+      '@typescript-eslint/no-redeclare': 'error',
+      
+      // Additional strict rules
+      '@typescript-eslint/no-confusing-void-expression': 'error',
+      '@typescript-eslint/no-meaningless-void-operator': 'error',
+      '@typescript-eslint/no-mixed-enums': 'error',
+      '@typescript-eslint/no-dynamic-delete': 'error',
+      '@typescript-eslint/no-extraneous-class': 'error',
+      '@typescript-eslint/no-invalid-void-type': 'error',
+      '@typescript-eslint/no-require-imports': 'error',
+      '@typescript-eslint/no-useless-empty-export': 'error',
+      '@typescript-eslint/prefer-enum-initializers': 'error',
+      '@typescript-eslint/prefer-literal-enum-member': 'error',
+      '@typescript-eslint/unified-signatures': 'error',
+    },
+  },
+  
+  // Disable type checking for JavaScript files
+  {
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    extends: [tseslint.configs.disableTypeChecked],
+  },
+);
+```
+
+## Module Resolution & Mixed Environment Handling
+
+### CRITICAL: Explicit Import Extensions
+
+In mixed JavaScript/TypeScript environments, **ALWAYS** use explicit file extensions for TypeScript imports:
+
+```typescript
+// ❌ WRONG - Will cause "Module not found" errors
+import Component from './Component';
+import { types } from '../types/interfaces';
+
+// ✅ CORRECT - Explicit extensions for cross-language imports
+import Component from './Component.tsx';
+import { types } from '../types/interfaces.ts';
+```
+
+### Mixed Environment Import Patterns
+
+```typescript
+// JavaScript file importing TypeScript components
+// App.js
+import Homeone from './pages/Homeone.tsx'; // Explicit .tsx extension
+import NewsletterArea from '../components/homeone/NewsletterArea.tsx';
+
+// TypeScript file importing TypeScript components  
+// Homeone.tsx
+import Banner from '../components/homeone/Banner.tsx';
+import Service from '../components/homeone/Service.tsx';
+import type { MenuItem } from '../components/UpMovieItemMenu.ts';
+```
+
+### Module Resolution Validation
+
+**MANDATORY checks before deployment:**
+
+1. **Cross-File Import Validation**:
+   ```bash
+   # Check for import errors
+   npx tsc --noEmit
+   ```
+
+2. **Mixed Environment Compatibility**:
+   ```typescript
+   // Verify JS files can import TS components
+   // Test in build process
+   npm run build
+   ```
+
+3. **Type-Only Import Separation**:
+   ```typescript
+   // ✅ Separate type and value imports
+   import Menu from '../UpMovieItemMenu.ts';
+   import type { MenuItem, ContentCategory } from '../UpMovieItemMenu.ts';
+   ```
+
+### Common Module Resolution Errors
+
+**Error Pattern**: `Module not found: Error: Can't resolve './Component'`
+
+**Root Causes & Solutions**:
+
+1. **Missing File Extensions**:
+   ```typescript
+   // ❌ Causes build failure
+   import Component from './Component';
+   
+   // ✅ Explicit extension resolves module
+   import Component from './Component.tsx';
+   ```
+
+2. **Inconsistent Import Paths**:
+   ```typescript
+   // ❌ Mixed extension patterns
+   import A from './A'; // No extension
+   import B from './B.tsx'; // With extension
+   
+   // ✅ Consistent explicit extensions
+   import A from './A.tsx';
+   import B from './B.tsx';
+   ```
+
+3. **Type vs Value Import Confusion**:
+   ```typescript
+   // ❌ Mixing type and value imports
+   import Menu, { MenuItem } from './Menu.ts';
+   
+   // ✅ Explicit separation
+   import Menu from './Menu.ts';
+   import type { MenuItem } from './Menu.ts';
+   ```
+
+## Type Safety Best Practices
+
+### 1. Avoid `any` at All Costs
+
+```typescript
+// ❌ NEVER do this
+function processData(data: any): any {
+  return data.value;
+}
+
+// ✅ Always use proper types
+interface DataItem {
+  value: string;
+}
+
+function processData(data: DataItem): string {
+  return data.value;
+}
+```
+
+### 2. Use Unknown Instead of Any
+
+```typescript
+// ❌ Avoid
+function parseJSON(json: string): any {
+  return JSON.parse(json);
+}
+
+// ✅ Prefer
+function parseJSON(json: string): unknown {
+  return JSON.parse(json);
+}
+
+// With type guards
+function isDataItem(value: unknown): value is DataItem {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'value' in value &&
+    typeof (value as any).value === 'string'
+  );
+}
+```
+
+### 3. Strict Null Checks
+
+```typescript
+// ❌ Unsafe null handling
+function getLength(str: string | null): number {
+  return str.length; // Error with strictNullChecks
+}
+
+// ✅ Safe null handling
+function getLength(str: string | null): number {
+  return str?.length ?? 0;
+}
+```
+
+### 4. Exhaustive Switch Statements
+
+```typescript
+// ✅ Ensure all cases are handled
+type Status = 'pending' | 'approved' | 'rejected';
+
+function handleStatus(status: Status): string {
+  switch (status) {
+    case 'pending':
+      return 'Waiting for approval';
+    case 'approved':
+      return 'Ready to proceed';
+    case 'rejected':
+      return 'Request denied';
+    default:
+      // This ensures TypeScript errors if a new status is added
+      const exhaustiveCheck: never = status;
+      throw new Error(`Unhandled status: ${exhaustiveCheck}`);
+  }
+}
+```
+
+### 5. Const Assertions for Literal Types
+
+```typescript
+// ❌ Mutable and less type-safe
+const CONFIG = {
+  API_URL: 'https://api.example.com',
+  TIMEOUT: 5000,
+};
+
+// ✅ Immutable with literal types
+const CONFIG = {
+  API_URL: 'https://api.example.com',
+  TIMEOUT: 5000,
+} as const;
+
+// Even better - use satisfies for type checking
+interface Config {
+  API_URL: string;
+  TIMEOUT: number;
+}
+
+const CONFIG = {
+  API_URL: 'https://api.example.com',
+  TIMEOUT: 5000,
+} as const satisfies Config;
+```
+
+### 6. Function Type Safety
+
+```typescript
+// ❌ Implicit any parameters
+function processArray(items, callback) {
+  return items.map(callback);
+}
+
+// ✅ Explicit types with generics
+function processArray<T, R>(
+  items: readonly T[],
+  callback: (item: T, index: number) => R
+): R[] {
+  return items.map(callback);
+}
+```
+
+### 7. Error Handling
+
+```typescript
+// ❌ Throwing anything
+function riskyOperation() {
+  throw 'Something went wrong';
+}
+
+// ✅ Always throw Error instances
+class CustomError extends Error {
+  constructor(message: string, public readonly code: string) {
+    super(message);
+    this.name = 'CustomError';
+  }
+}
+
+function riskyOperation(): void {
+  throw new CustomError('Something went wrong', 'OPERATION_FAILED');
+}
+```
+
+## Integration with Existing Rules
+
+This configuration extends and enhances your existing TypeScript development rules:
+
+1. **Documentation**: All functions must have JSDoc comments explaining parameters, return types, and examples
+2. **Testing**: Maintain minimum 90% code coverage with type-safe test utilities
+3. **Context7 Integration**: Always verify library APIs against Context7 documentation
+4. **Code Comments**: Explain complex type manipulations and generic constraints
+5. **Module Resolution**: Ensure all imports use explicit file extensions for cross-environment compatibility
+6. **Mixed Environment**: Test JavaScript files importing TypeScript components before deployment
+
+## Pre-Commit Checklist
+
+Before committing any TypeScript code:
+
+### Core Type Safety
+- [ ] All TypeScript compilation errors are resolved
+- [ ] No `any` types remain (use `unknown` with type guards instead)
+- [ ] All functions have explicit return types
+- [ ] Strict null checks pass without assertions
+- [ ] ESLint reports no errors with strict configuration
+- [ ] Complex types are documented with examples
+- [ ] Generic constraints are properly bounded
+- [ ] Error handling uses proper Error classes
+- [ ] All switch statements are exhaustive
+- [ ] No `// @ts-ignore` or `// @ts-expect-error` comments
+
+### Module Resolution & Mixed Environment
+- [ ] All TypeScript imports use explicit file extensions (.tsx, .ts)
+- [ ] JavaScript files importing TypeScript use explicit extensions
+- [ ] Type-only imports are properly separated with `import type`
+- [ ] Build process completes without module resolution errors
+- [ ] Cross-file type references work correctly
+- [ ] Mixed JS/TS environment tested with `npm run build`
+- [ ] No "Module not found" or "Can't resolve" errors in development server
+
+## Emergency Protocols
+
+### Module Resolution Troubleshooting
+
+If you encounter "Module not found" or import resolution errors:
+
+1. **Verify File Extensions**:
+   ```bash
+   # Check all imports have explicit extensions
+   grep -r "import.*from ['\"]\./.*[^.tsx?]['\"]" src/
+   ```
+
+2. **Test Mixed Environment**:
+   ```bash
+   # Ensure JS files can import TS components
+   npx tsc --allowJs --checkJs false --noEmit
+   ```
+
+3. **Validate Build Process**:
+   ```bash
+   # Test full build pipeline
+   npm run build
+   ```
+
+### Type Safety Troubleshooting
+
+If you encounter TypeScript errors that seem impossible to resolve:
+
+1. First, check Context7 for library-specific TypeScript usage
+2. Verify module resolution with explicit file extensions
+3. Test in mixed JS/TS environment before deployment
+4. Use type assertions sparingly and document why they're necessary
+5. Consider refactoring the code structure rather than bypassing type safety
+6. If using `as` assertions, prefer `satisfies` when possible
+7. Document any temporary workarounds with TODO comments and GitHub issues
+
+### Common Error Solutions
+
+**"Module not found: Error: Can't resolve"**
+- Add explicit file extensions to all TypeScript imports
+- Verify target file exists and has correct extension
+- Check for case sensitivity in file paths
+
+**"Cannot use import statement outside a module"**
+- Ensure `"type": "module"` in package.json or use .mjs extension
+- Verify tsconfig.json has correct module settings
+
+**Mixed JS/TS import failures**
+- Enable `"allowJs": true` in tsconfig.json
+- Use explicit file extensions in JavaScript files importing TypeScript
+
+Remember: **Type safety is not optional**. It's the foundation of maintainable, bug-free code.

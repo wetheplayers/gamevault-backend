@@ -1,0 +1,371 @@
+---
+description: 
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+# TypeScript & TSX Development Rules
+
+## Core TypeScript Configuration
+
+### 1. Strict Mode Compliance
+- **ALWAYS** enable TypeScript strict mode in `tsconfig.json`
+- Use `"strict": true` or enable individual strict flags:
+  ```json
+  {
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noUncheckedIndexedAccess": true
+    }
+  }
+  ```
+
+### 2. Essential Compiler Options
+- Use `"exactOptionalPropertyTypes": true`
+- Enable `"noUnusedLocals": true` and `"noUnusedParameters": true`
+- Set `"moduleResolution": "bundler"` for modern projects
+- Use `"allowSyntheticDefaultImports": true` for better import compatibility
+- Enable `"allowJs": true` for mixed JavaScript/TypeScript environments
+- Set `"forceConsistentCasingInFileNames": true` to prevent case-related import issues
+
+## File Organization & Naming
+
+### 3. File Naming Conventions
+- Use **kebab-case** for file names: `user-profile.ts`, `api-client.tsx`
+- Component files should match component name: `UserProfile.tsx` for `UserProfile` component
+- Type definition files: `types.ts` or `user.types.ts`
+- Utility files: `utils.ts` or `string.utils.ts`
+
+### 4. File Structure
+- Group related files in directories
+- Keep components, types, and utilities organized
+- Use index files for clean imports: `export { UserProfile } from './UserProfile'`
+
+## Type Definitions
+
+### 5. Explicit Type Annotations
+- **ALWAYS** define return types for functions:
+  ```typescript
+  function calculateTotal(items: Item[]): number {
+    return items.reduce((sum, item) => sum + item.price, 0);
+  }
+  ```
+- Use explicit types for object literals when not obvious
+- Define interfaces over type aliases for object shapes
+
+### 6. Interface & Type Best Practices
+- Use **PascalCase** for interfaces and types: `UserProfile`, `ApiResponse`
+- Prefer interfaces for extensible object types
+- Use type aliases for unions, primitives, and computed types
+- Always define props interfaces for React components:
+  ```typescript
+  interface UserCardProps {
+    user: User;
+    onEdit?: (user: User) => void;
+    className?: string;
+  }
+  ```
+
+### 7. Avoid Type Assertions
+- **NEVER** use `as any` or `any` type
+- Use type guards instead of type assertions
+- Prefer unknown over any when type is truly unknown
+- Use satisfies operator when appropriate: `const config = {...} satisfies Config`
+
+### 7.1. Cross-File Type Safety
+
+Ensure types work correctly across file boundaries:
+
+```typescript
+// types/MenuItem.ts
+export interface MenuItem {
+  readonly id: number;
+  readonly title: string;
+  readonly category: ContentCategory;
+}
+
+export type ContentCategory = 'games' | 'media' | 'articles';
+
+// components/Menu.tsx
+import type { MenuItem, ContentCategory } from '../types/MenuItem.ts';
+
+interface MenuProps {
+  items: readonly MenuItem[];
+  onFilter: (category: ContentCategory) => void;
+}
+```
+
+## React/TSX Specific Rules
+
+### 8. Component Definition
+- Use function components with explicit return types:
+  ```typescript
+  const UserCard: React.FC<UserCardProps> = ({ user, onEdit, className }) => {
+    return <div className={className}>...</div>;
+  };
+  ```
+- Or use function declaration with explicit return type:
+  ```typescript
+  function UserCard({ user, onEdit, className }: UserCardProps): JSX.Element {
+    return <div className={className}>...</div>;
+  }
+  ```
+
+### 9. Hooks Usage
+- Type useState with generic when initial value is null/undefined:
+  ```typescript
+  const [user, setUser] = useState<User | null>(null);
+  ```
+- Always type useRef based on intended usage:
+  ```typescript
+  const inputRef = useRef<HTMLInputElement>(null);
+  ```
+- Define custom hook return types explicitly
+
+### 10. Event Handlers
+- Use specific event types:
+  ```typescript
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+  };
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setValue(event.target.value);
+  };
+  ```
+
+## Import/Export Patterns
+
+### 11. Import Organization
+- Group imports in this order:
+  1. External libraries (React, lodash, etc.)
+  2. Internal utilities and types
+  3. Relative imports
+- Use explicit imports: `import { useState, useEffect } from 'react'`
+- Avoid default imports for utilities, prefer named exports
+
+### 12. Module Resolution Best Practices
+
+**CRITICAL**: Always use explicit file extensions for TypeScript imports in mixed environments:
+
+```typescript
+// ✅ CORRECT - Explicit extensions prevent module resolution errors
+import Component from './Component.tsx';
+import Service from '../services/ApiService.ts';
+import type { User } from '../types/User.ts';
+
+// ❌ WRONG - Can cause "Module not found" errors
+import Component from './Component';
+import Service from '../services/ApiService';
+import type { User } from '../types/User';
+```
+
+**Mixed Environment Imports**:
+```javascript
+// JavaScript file (App.js) importing TypeScript components
+import HomePage from './pages/HomePage.tsx';
+import Newsletter from './components/Newsletter.tsx';
+
+// TypeScript file importing other TypeScript files
+import Menu from '../data/MenuItems.ts';
+import type { MenuItem } from '../data/MenuItems.ts';
+```
+
+### 13. Export Conventions
+- Use named exports by default
+- Reserve default exports for main component in component files
+- Always export types and interfaces that might be used elsewhere
+- Separate type exports from value exports:
+  ```typescript
+  // ✅ Clear separation
+  export default Component;
+  export type { ComponentProps };
+  ```
+
+## Error Handling & Safety
+
+### 13. Null Safety
+- Use optional chaining: `user?.profile?.email`
+- Use nullish coalescing: `user.name ?? 'Unknown'`
+- Check for null/undefined before using values
+- Use type guards for runtime type checking
+
+### 14. Error Boundaries & Async Handling
+- Wrap async operations in try-catch blocks
+- Define error types explicitly:
+  ```typescript
+  type ApiError = {
+    message: string;
+    status: number;
+  };
+  ```
+- Use Result/Either patterns for error handling when appropriate
+
+## Performance & Optimization
+
+### 15. Memoization
+- Type React.memo correctly:
+  ```typescript
+  const MemoizedComponent = React.memo<ComponentProps>(({ prop1, prop2 }) => {
+    return <div>...</div>;
+  });
+  ```
+- Type useCallback and useMemo with explicit return types when necessary
+
+### 16. Lazy Loading
+- Type lazy-loaded components:
+  ```typescript
+  const LazyComponent = React.lazy((): Promise<{ default: React.ComponentType<Props> }> => 
+    import('./LazyComponent')
+  );
+  ```
+
+## Code Quality Rules
+
+### 17. Function Signatures
+- Keep function parameters under 4; use objects for more parameters
+- Use readonly for arrays/objects that shouldn't be mutated:
+  ```typescript
+  function processItems(items: readonly Item[]): ProcessedItem[] {
+    return items.map(processItem);
+  }
+  ```
+
+### 18. Utility Functions
+- Create small, pure functions when possible
+- Use generic types for reusable utilities:
+  ```typescript
+  function groupBy<T, K extends keyof T>(items: T[], key: K): Record<string, T[]> {
+    // implementation
+  }
+  ```
+
+### 19. Constants & Enums
+- Use const assertions for immutable data:
+  ```typescript
+  const STATUSES = ['pending', 'completed', 'failed'] as const;
+  type Status = typeof STATUSES[number];
+  ```
+- Prefer const assertions over enums unless you need reverse mapping
+
+## Documentation
+
+### 20. JSDoc Comments
+- Document complex functions and public APIs:
+  ```typescript
+  /**
+   * Calculates the total price including tax and discounts
+   * @param items - Array of items to calculate total for
+   * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
+   * @returns Total price after tax and discounts
+   */
+  function calculateTotal(items: Item[], taxRate: number): number {
+    // implementation
+  }
+  ```
+
+## Security Practices
+
+### 21. Data Validation
+- Validate external data at boundaries
+- Use type guards for runtime validation
+- Never trust data from APIs without validation
+- Sanitize user inputs in React components
+
+### 22. Sensitive Data
+- Never log sensitive information
+- Use environment variables for configuration
+- Type environment variables explicitly:
+  ```typescript
+  interface Environment {
+    readonly API_URL: string;
+    readonly API_KEY: string;
+  }
+  ```
+
+## Testing Considerations
+
+### 23. Testable Code
+- Write functions that are easy to test (pure when possible)
+- Export types needed for testing
+- Use dependency injection for better testability
+- Type test utilities and mocks properly
+- Ensure test files can import TypeScript modules with explicit extensions
+
+---
+
+## Module Resolution & Build Validation
+
+### 24. Mixed Environment Testing
+
+Before deployment, verify mixed JavaScript/TypeScript compatibility:
+
+```bash
+# Test TypeScript compilation with JS files
+npx tsc --allowJs --noEmit
+
+# Verify build process handles mixed environment
+npm run build
+
+# Check for module resolution errors
+npm start
+```
+
+### 25. Import Path Validation
+
+```bash
+# Find imports without explicit extensions (potential errors)
+grep -r "import.*from ['\"]\./.*[^.tsx?]['\"]" src/
+
+# Find mixed import patterns
+grep -r "import.*from.*\.tsx\?" src/ | grep -v "from.*\.tsx\?['\"]$"
+```
+
+### 26. Common Module Resolution Fixes
+
+```typescript
+// Problem: "Module not found" in mixed environment
+// Before:
+import Header from '../components/Header';
+
+// After: 
+import Header from '../components/Header.tsx';
+
+// Problem: Type imports not resolving
+// Before:
+import { User } from './types';
+
+// After:
+import type { User } from './types.ts';
+```
+
+---
+
+## Quick Reference Checklist
+
+Before submitting .ts/.tsx files, verify:
+
+### Core TypeScript
+- [ ] Strict mode enabled and no type errors
+- [ ] All functions have explicit return types
+- [ ] No `any` or `as any` usage
+- [ ] Props interfaces defined for React components
+- [ ] Proper error handling in place
+- [ ] Imports organized and explicit
+- [ ] File naming follows conventions
+- [ ] JSDoc added for complex functions
+- [ ] Null safety practices applied
+- [ ] Performance considerations addressed
+
+### Module Resolution & Mixed Environment
+- [ ] All TypeScript imports use explicit file extensions (.ts, .tsx)
+- [ ] JavaScript files importing TypeScript have explicit extensions
+- [ ] Type-only imports use `import type` syntax
+- [ ] Build process completes without module resolution errors
+- [ ] Mixed environment tested with `npm run build`
+- [ ] Development server starts without "Module not found" errors
+- [ ] Cross-file type references work correctly

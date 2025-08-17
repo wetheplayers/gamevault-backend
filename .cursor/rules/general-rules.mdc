@@ -1,0 +1,272 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# General Development Rules for AI Agents
+
+## Core Thinking & Planning Principles
+
+### 1. Think Before You Act
+- **ALWAYS** analyze the task completely before starting any work
+- Break complex tasks into smaller, manageable steps
+- Consider edge cases, potential issues, and alternative approaches
+- Evaluate the impact of your changes on the entire system
+- Plan your approach and communicate it when working on complex tasks
+- NEVER update any *.env or *.env.* files without EXPLICIT confirmation by the user
+- When running terminal commands, NEVER try and echo information to the user as it breaks everytime
+
+### 2. Understand Before You Build
+- **Ask clarifying questions** when requirements are ambiguous or incomplete
+- Confirm your understanding of the task before proceeding
+- Identify the target audience (end users, developers, stakeholders)
+- Understand the business context and constraints
+- Verify technical requirements and limitations
+
+### 3. Quality Over Speed
+- **Prioritize correctness and maintainability** over quick solutions
+- Build for the long term, not just immediate functionality
+- Consider the total cost of ownership of your code
+- Invest time upfront to avoid technical debt later
+- Always deliver production-ready code, never prototypes without explicit request
+
+## Communication & Efficiency
+
+### 4. Optimize Token Usage
+- **Be concise but complete** in explanations and code comments
+- Avoid redundant explanations or excessive verbosity
+- Use clear, direct language without unnecessary filler words
+- Provide comprehensive solutions without over-explaining obvious concepts
+- Focus on the most important information first
+
+### 5. Ask for Clarification
+**ALWAYS** ask when:
+- Requirements are vague or contradictory
+- Multiple valid approaches exist and choice impacts architecture
+- Technical constraints are unclear
+- User expectations are ambiguous
+- You need additional context to provide the best solution
+
+Examples of good clarifying questions:
+- "Should this handle offline scenarios?"
+- "What's the expected user volume for this feature?"
+- "Are there specific performance requirements?"
+- "Do you prefer a specific design pattern or framework?"
+
+## Code Quality & Best Practices
+
+### 6. Follow Established Best Practices
+- **Use industry-standard patterns** and conventions for the technology stack
+- Apply SOLID principles and clean code practices
+- Follow the existing codebase style and patterns
+- Use appropriate design patterns for the problem domain
+- Implement proper error handling and input validation
+- Write testable, modular code
+
+### 7. Security-First Mindset
+- **Treat all input as potentially malicious** until validated
+- Implement proper authentication and authorization
+- Use secure coding practices (parameterized queries, input sanitization)
+- Never expose sensitive information in logs or error messages
+- Follow the principle of least privilege
+- Keep dependencies updated and scan for vulnerabilities
+
+### 8. Performance Considerations
+- **Write efficient code** that scales appropriately
+- Consider time and space complexity in algorithm choices
+- Optimize database queries and API calls
+- Implement caching strategies where appropriate
+- Monitor resource usage and identify bottlenecks
+- Use lazy loading and pagination for large datasets
+
+## Documentation & Code Comments
+
+### 9. Comment for Junior Developers
+Write comments that explain:
+- **Why** the code exists (business logic and decisions)
+- **What** complex algorithms or logic blocks do
+- **How** to use functions, classes, and modules
+- **Warning** about gotchas, edge cases, or limitations
+- **Examples** of expected input/output for complex functions
+
+```typescript
+/**
+ * Calculates compound interest for investment scenarios.
+ * Uses the formula: A = P(1 + r/n)^(nt)
+ * 
+ * @param principal - Initial investment amount in dollars
+ * @param rate - Annual interest rate as decimal (0.05 = 5%)
+ * @param compoundingFrequency - Times per year interest compounds (12 = monthly)
+ * @param years - Investment period in years
+ * @returns Final amount after compound interest
+ * 
+ * @example
+ * // $1000 at 5% annual rate, compounded monthly for 10 years
+ * const result = calculateCompoundInterest(1000, 0.05, 12, 10);
+ * // Returns: 1643.62
+ */
+function calculateCompoundInterest(
+  principal: number,
+  rate: number, 
+  compoundingFrequency: number,
+  years: number
+): number {
+  // Validate inputs to prevent common calculation errors
+  if (principal <= 0 || rate < 0 || compoundingFrequency <= 0 || years < 0) {
+    throw new Error('Invalid input: all values must be positive');
+  }
+  
+  // Apply compound interest formula
+  return principal * Math.pow(1 + rate / compoundingFrequency, compoundingFrequency * years);
+}
+```
+
+### 10. Complete Documentation Requirements
+**ALWAYS** provide:
+- Clear README with setup instructions and usage examples
+- API documentation for all public interfaces
+- Architecture decisions and design rationale
+- Troubleshooting guides for common issues
+- Deployment and configuration instructions
+- Contributing guidelines for team members
+
+### 11. Inline Documentation Standards
+- Use JSDoc or equivalent for all public functions and classes
+- Document complex business logic with block comments
+- Add TODO comments for known technical debt
+- Use descriptive variable and function names that reduce need for comments
+- Keep comments updated when code changes
+
+## Error Handling & Resilience
+
+### 12. Comprehensive Error Handling
+- **Anticipate and handle all failure scenarios** gracefully
+- Provide meaningful error messages for debugging
+- Implement proper logging for troubleshooting
+- Use appropriate error types and status codes
+- Design for graceful degradation when possible
+- Include retry logic for transient failures
+
+### 13. Input Validation & Sanitization
+- **Validate all inputs** at system boundaries
+- Sanitize user data to prevent injection attacks
+- Use type checking and schema validation
+- Provide clear feedback for validation failures
+- Handle edge cases like empty inputs, null values, and extreme sizes
+
+## User Experience & Accessibility
+
+### 14. User-Centric Design
+- **Consider the end user** in every technical decision
+- Optimize for usability and intuitive workflows
+- Provide clear feedback for user actions
+- Design responsive interfaces that work on all devices
+- Minimize cognitive load and reduce friction
+
+### 15. Accessibility Standards
+- **Build inclusive applications** from the start
+- Follow WCAG guidelines for web applications
+- Ensure keyboard navigation works properly
+- Provide proper semantic markup and ARIA labels
+- Test with screen readers and accessibility tools
+- Use sufficient color contrast and readable fonts
+
+## Testing & Quality Assurance
+
+### 16. Test-Driven Quality
+- **Write tests for all new functionality** before considering it complete
+- Include unit tests, integration tests, and end-to-end tests as appropriate
+- Test error conditions and edge cases
+- Maintain high code coverage (80%+ minimum)
+- Use meaningful test descriptions that document expected behavior
+
+### 17. Code Review Mindset
+- **Write code as if a senior developer will review it**
+- Self-review your code before submission
+- Consider maintainability and readability
+- Follow team coding standards and style guides
+- Use linting tools and automated quality checks
+
+## Collaboration & Version Control
+
+### 18. Version Control Best Practices
+- **Make atomic, focused commits** with clear messages
+- Use descriptive branch names that indicate the feature or fix
+- Follow conventional commit message format
+- Keep commits small and logically grouped
+- Write commit messages that explain the "why" not just the "what"
+
+### 19. Team Collaboration
+- **Consider the impact on other developers** when making changes
+- Communicate breaking changes clearly
+- Update shared documentation when making architectural changes
+- Use consistent naming conventions across the codebase
+- Be responsive to code review feedback
+
+## Continuous Improvement
+
+### 20. Stay Current
+- **Keep up with best practices** for your technology stack
+- Regularly update dependencies and address security vulnerabilities
+- Learn from code review feedback and apply lessons learned
+- Monitor application performance and user feedback
+- Refactor code when technical debt accumulates
+
+### 21. Measure and Monitor
+- **Implement observability** in your applications
+- Log important events and errors appropriately
+- Monitor key performance metrics
+- Set up alerts for critical system failures
+- Use analytics to understand user behavior and system usage
+
+## Environment & Deployment
+
+### 22. Environment Consistency
+- **Ensure code works consistently** across all environments
+- Use environment variables for configuration
+- Implement proper CI/CD pipelines
+- Test in staging environments before production deployment
+- Document environment-specific setup requirements
+
+### 23. Deployment Safety
+- **Plan for safe, reversible deployments**
+- Implement database migration strategies
+- Use feature flags for gradual rollouts
+- Have rollback procedures documented and tested
+- Monitor applications after deployment
+
+---
+
+## Pre-Task Checklist
+
+Before starting any development task:
+- [ ] Do I fully understand the requirements?
+- [ ] Have I asked all necessary clarifying questions?
+- [ ] Do I know the target users and use cases?
+- [ ] Am I clear on technical constraints and requirements?
+- [ ] Have I planned my approach and considered alternatives?
+
+## Pre-Completion Checklist
+
+Before marking any task as complete:
+- [ ] Code follows established best practices and style guides
+- [ ] All functions and classes are properly documented
+- [ ] Error handling is comprehensive and appropriate
+- [ ] Tests are written and passing
+- [ ] Documentation is updated
+- [ ] Security considerations have been addressed
+- [ ] Performance implications have been considered
+- [ ] Code is ready for production use
+
+## Success Principles
+
+Remember these core principles:
+- ✅ **Think first, code second**: Planning prevents problems
+- ✅ **Quality over quantity**: Better to do less work well than more work poorly
+- ✅ **Clarity over cleverness**: Readable code is maintainable code
+- ✅ **Security by design**: Build safety into every component
+- ✅ **User-focused development**: Technology serves people, not the other way around
+- ✅ **Continuous learning**: Adapt and improve with each project
+- ✅ **Team success**: Write code that helps your team succeed
+
+The goal is not just to complete tasks, but to build robust, maintainable, and valuable software that serves users well and can evolve with changing needs.

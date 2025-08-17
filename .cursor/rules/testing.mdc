@@ -1,0 +1,354 @@
+---
+description: When creating any e2e, unit or validation testing. Anything to do with tests then this is a guide.
+globs: 
+alwaysApply: false
+---
+# Comprehensive Test Suite Rules & Best Practices
+
+## Core Testing Principles
+
+### 1. Test Pyramid Hierarchy
+- **70% Unit Tests**: Fast, isolated, focused on individual functions/components
+- **20% Integration Tests**: Test interactions between modules/services
+- **10% End-to-End Tests**: Full user workflows and critical paths
+- **NEVER** invert this pyramid - avoid heavy reliance on slow E2E tests
+
+### 2. Test-Driven Development (TDD)
+- **Red-Green-Refactor cycle**: Write failing test → Make it pass → Improve code
+- Write tests before implementing functionality when possible
+- Use tests as design documentation for expected behavior
+- Ensure every line of production code has a corresponding test
+
+### 3. Fast Feedback Loops
+- **Unit tests run in < 10ms each**: Keep tests lightning fast
+- Integration tests complete in < 5 seconds
+- Full test suite runs in < 10 minutes
+- Tests must be deterministic and reliable (no flaky tests)
+
+## Test Organization & Structure
+
+### 4. Directory Structure
+Organize tests to mirror production code structure:
+```
+src/
+├── components/
+│   ├── UserCard/
+│   │   ├── UserCard.tsx
+│   │   ├── UserCard.test.tsx
+│   │   └── UserCard.integration.test.tsx
+├── services/
+│   ├── api.ts
+│   └── api.test.ts
+├── utils/
+│   ├── helpers.ts
+│   └── helpers.test.ts
+└── __tests__/
+    ├── e2e/
+    ├── integration/
+    └── setup/
+```
+
+### 5. Test File Naming Conventions
+- **Unit tests**: `ComponentName.test.ts` or `functionName.test.ts`
+- **Integration tests**: `feature.integration.test.ts`
+- **E2E tests**: `user-workflow.e2e.test.ts`
+- **Test utilities**: `test-utils.ts`, `test-fixtures.ts`
+- Use descriptive names that indicate what is being tested
+
+### 6. Test Suite Categories
+Implement these distinct test types:
+- **Unit Tests**: Individual functions, components, classes
+- **Integration Tests**: API endpoints, database interactions, service integrations
+- **Contract Tests**: API contracts, external service interfaces
+- **Performance Tests**: Load testing, benchmark tests
+- **Security Tests**: Authentication, authorization, input validation
+- **Accessibility Tests**: WCAG compliance, screen reader compatibility
+
+## Writing Effective Tests
+
+### 7. Test Structure (AAA Pattern)
+**ALWAYS** follow Arrange-Act-Assert pattern:
+```typescript
+describe('calculateTotal', () => {
+  it('should calculate total with tax correctly', () => {
+    // Arrange
+    const items = [{ price: 100 }, { price: 200 }];
+    const taxRate = 0.08;
+    
+    // Act
+    const result = calculateTotal(items, taxRate);
+    
+    // Assert
+    expect(result).toBe(324); // 300 + 24 tax
+  });
+});
+```
+
+### 8. Test Naming Standards
+- **Use descriptive test names**: Describe the scenario and expected outcome
+- Format: `should [expected behavior] when [conditions]`
+- Examples:
+  ```typescript
+  it('should return user data when valid ID is provided')
+  it('should throw error when user ID does not exist')
+  it('should disable submit button when form is invalid')
+  ```
+- Avoid generic names like "works correctly" or "test function"
+
+### 9. Test Data Management
+- **Use factories and fixtures**: Create reusable test data builders
+- Keep test data isolated and predictable
+- Use realistic but anonymized data
+- Clean up test data after each test
+- Example factory pattern:
+  ```typescript
+  const createUser = (overrides = {}) => ({
+    id: '123',
+    name: 'John Doe',
+    email: 'john@example.com',
+    ...overrides
+  });
+  ```
+
+### 10. Mocking & Stubbing Rules
+- **Mock external dependencies**: APIs, databases, file systems
+- Don't mock the code under test
+- Use dependency injection to make mocking easier
+- Prefer fake implementations over mocks when possible
+- Reset mocks between tests:
+  ```typescript
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  ```
+
+## Test Coverage & Quality Metrics
+
+### 11. Coverage Requirements
+- **Minimum 80% line coverage** for all production code
+- **100% coverage for critical paths**: Payment, authentication, security
+- **Branch coverage > 85%**: Test all conditional logic paths
+- Function coverage should be 90%+
+- Use coverage reports to identify untested code, not as the only quality metric
+
+### 12. Quality Over Quantity
+- **Test behavior, not implementation**: Focus on what the code does, not how
+- Each test should verify one specific behavior
+- Tests should be independent and able to run in any order
+- Avoid testing private methods directly
+- Test edge cases and error conditions
+
+### 13. Critical Path Testing
+**ALWAYS** have comprehensive tests for:
+- User authentication and authorization
+- Payment processing and financial calculations
+- Data validation and sanitization
+- Security-sensitive operations
+- Business logic and core workflows
+- Error handling and recovery mechanisms
+
+## Framework-Specific Guidelines
+
+### 14. React/Frontend Testing
+- **Component Testing**: Test props, state changes, user interactions
+- **Render Testing**: Verify correct DOM output
+- **Event Testing**: Test user interactions (clicks, form submissions)
+- **Hook Testing**: Test custom hooks in isolation
+- Example React test:
+  ```typescript
+  import { render, fireEvent, screen } from '@testing-library/react';
+  
+  it('should call onSubmit when form is submitted with valid data', () => {
+    const mockSubmit = jest.fn();
+    render(<ContactForm onSubmit={mockSubmit} />);
+    
+    fireEvent.change(screen.getByLabelText('Email'), {
+      target: { value: 'test@example.com' }
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    
+    expect(mockSubmit).toHaveBeenCalledWith({
+      email: 'test@example.com'
+    });
+  });
+  ```
+
+### 15. API/Backend Testing
+- **Route Testing**: Test all HTTP methods and status codes
+- **Middleware Testing**: Authentication, validation, error handling
+- **Database Testing**: CRUD operations, transactions, constraints
+- **Integration Testing**: Test complete request/response cycles
+- Example API test:
+  ```typescript
+  describe('POST /api/users', () => {
+    it('should create user and return 201', async () => {
+      const userData = { name: 'John', email: 'john@test.com' };
+      
+      const response = await request(app)
+        .post('/api/users')
+        .send(userData)
+        .expect(201);
+      
+      expect(response.body).toMatchObject({
+        id: expect.any(String),
+        ...userData
+      });
+    });
+  });
+  ```
+
+### 16. Database Testing
+- **Use test database**: Never test against production data
+- **Transaction rollback**: Reset database state after each test
+- **Test constraints**: Foreign keys, unique constraints, validations
+- **Test migrations**: Ensure schema changes work correctly
+- Use database factories for consistent test data
+
+## Automation & CI/CD Integration
+
+### 17. Continuous Testing Pipeline
+- **Pre-commit hooks**: Run unit tests and linting before commits
+- **Pull request checks**: Full test suite must pass before merging
+- **Automated test runs**: Trigger tests on code changes
+- **Parallel test execution**: Run tests concurrently to save time
+- **Test result reporting**: Clear visibility into test failures
+
+### 18. Test Environment Management
+- **Isolated test environments**: Each test run gets clean environment
+- **Environment parity**: Test environments match production closely
+- **Configuration management**: Use environment variables for test config
+- **Test data seeding**: Automated setup of required test data
+
+### 19. Flaky Test Management
+- **Zero tolerance for flaky tests**: Fix or delete unreliable tests immediately
+- **Retry mechanisms**: Limited retries for genuinely intermittent issues
+- **Test quarantine**: Temporarily disable problematic tests while fixing
+- **Root cause analysis**: Investigate and document flaky test causes
+
+## Performance & Load Testing
+
+### 20. Performance Test Categories
+- **Unit performance**: Individual function execution time
+- **Load testing**: Expected user volumes and concurrent requests
+- **Stress testing**: Breaking point identification
+- **Spike testing**: Sudden traffic increases
+- **Volume testing**: Large data set handling
+
+### 21. Performance Benchmarks
+- **API response times**: < 200ms for simple queries, < 2s for complex operations
+- **Database queries**: Track and optimize slow queries (> 100ms)
+- **Memory usage**: Monitor for memory leaks in long-running tests
+- **Resource utilization**: CPU, memory, and I/O usage patterns
+
+## Security Testing
+
+### 22. Security Test Requirements
+- **Input validation**: Test SQL injection, XSS, CSRF protection
+- **Authentication**: Test login, logout, session management
+- **Authorization**: Test role-based access controls
+- **Data encryption**: Test sensitive data handling
+- **Rate limiting**: Test API throttling and abuse prevention
+
+### 23. Vulnerability Testing
+- **Dependency scanning**: Check for known vulnerabilities in packages
+- **Static analysis**: Use tools to detect security issues in code
+- **Dynamic testing**: Runtime security testing
+- **Penetration testing**: Simulate real attack scenarios
+
+## Test Maintenance & Documentation
+
+### 24. Test Documentation
+- **Test plans**: Document testing strategy and coverage goals
+- **Test cases**: Clear descriptions of what each test validates
+- **Setup instructions**: How to run tests locally and in CI
+- **Troubleshooting guides**: Common test failures and solutions
+
+### 25. Test Refactoring
+- **Regular test review**: Remove outdated or redundant tests
+- **Test code quality**: Apply same standards as production code
+- **Shared utilities**: Extract common test patterns into reusable helpers
+- **Test performance**: Optimize slow tests without losing coverage
+
+### 26. Failure Analysis & Reporting
+- **Clear error messages**: Tests should explain why they failed
+- **Detailed logging**: Capture sufficient context for debugging
+- **Test reporting**: Generate readable test reports with metrics
+- **Failure tracking**: Monitor test failure patterns over time
+
+## Accessibility & Cross-Browser Testing
+
+### 27. Accessibility Testing
+- **Automated a11y tests**: Use tools like axe-core, jest-axe
+- **Keyboard navigation**: Test all interactions work without mouse
+- **Screen reader compatibility**: Test with assistive technologies
+- **Color contrast**: Verify WCAG compliance
+- **Focus management**: Test focus states and tabindex behavior
+
+### 28. Cross-Browser Testing
+- **Core browser support**: Test on Chrome, Firefox, Safari, Edge
+- **Mobile testing**: Test responsive behavior on mobile devices
+- **Feature detection**: Test progressive enhancement and polyfills
+- **Visual regression**: Automated screenshot comparison testing
+
+## Advanced Testing Strategies
+
+### 29. Property-Based Testing
+- **Generate test cases**: Use libraries like fast-check for property testing
+- **Edge case discovery**: Find corner cases through generated inputs
+- **Invariant testing**: Test properties that should always hold true
+- Example:
+  ```typescript
+  it('should always return sorted array', () => {
+    fc.assert(fc.property(fc.array(fc.integer()), (arr) => {
+      const sorted = customSort(arr);
+      expect(isSorted(sorted)).toBe(true);
+    }));
+  });
+  ```
+
+### 30. Snapshot Testing
+- **UI consistency**: Capture component output for regression detection
+- **API response format**: Ensure API responses maintain expected structure
+- **Configuration files**: Test generated configs don't change unexpectedly
+- **Review snapshot changes**: Always manually review snapshot updates
+
+## Emergency Testing Protocols
+
+### 31. Hotfix Testing
+- **Critical path verification**: Test core functionality still works
+- **Regression testing**: Run full suite even for small hotfixes
+- **Production monitoring**: Verify fix works in production environment
+- **Rollback testing**: Ensure rollback procedures work if needed
+
+### 32. Incident Response Testing
+- **Disaster recovery**: Test backup and recovery procedures
+- **Failover testing**: Verify system behavior during component failures
+- **Monitoring validation**: Ensure alerts and monitoring work correctly
+- **Post-incident testing**: Verify fixes and prevent regression
+
+---
+
+## Test Quality Checklist
+
+Before considering a test suite complete:
+- [ ] All critical user paths are tested
+- [ ] Edge cases and error conditions are covered
+- [ ] Tests are fast, reliable, and deterministic
+- [ ] Code coverage meets minimum thresholds
+- [ ] Integration points are thoroughly tested
+- [ ] Security vulnerabilities are tested
+- [ ] Performance benchmarks are established
+- [ ] Tests are well-documented and maintainable
+- [ ] CI/CD pipeline includes comprehensive testing
+- [ ] Test failures provide actionable feedback
+
+## Success Metrics
+
+A comprehensive test suite should achieve:
+- ✅ **High confidence**: Developers trust tests to catch regressions
+- ✅ **Fast feedback**: Test failures are caught within minutes
+- ✅ **Low maintenance**: Tests don't break with every code change
+- ✅ **Clear documentation**: Tests serve as living documentation
+- ✅ **Bug prevention**: Issues are caught before reaching production
+
+Remember: Tests are an investment in code quality, developer productivity, and user satisfaction. A well-maintained test suite pays dividends by enabling confident refactoring, faster development cycles, and higher-quality software releases.

@@ -1,0 +1,33 @@
+{
+    "mcpServers": {
+        "Context7": {
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp"]
+          },
+          "brave-search": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+            "env": {
+              "BRAVE_API_KEY": "BSAxq7dl4Xy1nWON_3lGXjXZXqPzZWB"
+            }
+          },
+          "mui-mcp": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@mui/mcp@latest"]
+          },
+          "time": {
+            "command": "uvx",
+            "args": [
+                "mcp-server-time"
+            ]
+          },
+          "supabase": {
+            "command": "npx",
+            "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=gadiljkrbqduqvacmtwx"],
+            "env": {
+              "SUPABASE_ACCESS_TOKEN": "sbp_a2a0466c398aa20c6534a41b78bdaa8f17512fa0"
+            }
+          }
+    }
+  }
