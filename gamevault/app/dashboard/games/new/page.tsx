@@ -451,7 +451,7 @@ export default function Page() {
                     <form onSubmit={onSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="canonical_title">Canonical title</Label>
+                          <Label htmlFor="canonical_title">Game title</Label>
                           <Input id="canonical_title" required value={form.canonical_title || ''} onChange={(e) => handleChange('canonical_title', e.target.value)} />
                         </div>
                         <div className="space-y-2">
