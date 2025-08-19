@@ -7,6 +7,7 @@ import {
   IconChartBar,
   IconDashboard,
   IconDatabase,
+  IconDeviceGamepad,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
@@ -48,9 +49,9 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
+      title: "Games",
+      url: "/dashboard/games",
+      icon: IconDeviceGamepad,
     },
     {
       title: "Analytics",
